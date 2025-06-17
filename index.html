@@ -526,19 +526,38 @@
         currentMonday.setDate(today.getDate() - (today.getDay() || 7) + 1);
 
         const originalEvents = [...events];
+        const weekEnd = new Date(currentMonday);
+        weekEnd.setDate(currentMonday.getDate() + 7);
 
         // Générer des événements pour 8 semaines à partir des événements récurrents
         for (let week = 0; week < 8; week++) {
           originalEvents.forEach((event) => {
             if (event.isRecurring) {
               const eventDate = new Date(event.date);
-              const dayOfWeek = eventDate.getDay();
+
+              // Calculer le jour de la semaine (0 = dimanche, 1 = lundi, etc.)
+              let dayOfWeek = eventDate.getDay();
+              // Convertir pour que lundi = 0, mardi = 1, etc.
+              dayOfWeek = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
 
               // Calculer la date pour cette semaine
               const newEventDate = new Date(currentMonday);
               newEventDate.setDate(
                 currentMonday.getDate() + dayOfWeek + week * 7
               );
+
+              // Vérifier si l'événement original est déjà dans la semaine courante
+              const isOriginalInCurrentWeek =
+                eventDate >= currentMonday && eventDate < weekEnd;
+
+              // Si c'est la semaine 0 et que l'événement original est déjà présent, on le saute
+              // OU si la nouvelle date calculée est la même que l'événement original
+              if (
+                (week === 0 && isOriginalInCurrentWeek) ||
+                newEventDate.toISOString().split('T')[0] === event.date
+              ) {
+                return;
+              }
 
               // Créer un nouvel événement pour cette semaine
               const newEvent = {
@@ -670,7 +689,11 @@
 
       function displayEvent(event) {
         const eventDate = new Date(event.date);
-        const dayOfWeek = (eventDate.getDay() + 6) % 7; // Convertir dimanche=0 en lundi=0
+
+        // Calculer le jour de la semaine (0 = dimanche, 1 = lundi, etc.)
+        let dayOfWeek = eventDate.getDay();
+        // Convertir pour que lundi = 0, mardi = 1, etc.
+        dayOfWeek = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
 
         const startHour = parseInt(event.startTime.split(':')[0]);
         const endHour = parseInt(event.endTime.split(':')[0]);
