@@ -405,17 +405,8 @@
         try {
           updateLoadStatus('🔄 Chargement des données...', 'loading');
 
-          const response = await fetch('events.json');
-          if (!response.ok) {
-            throw new Error('Impossible de charger le fichier events.json');
-          }
-
-          const data = await response.json();
-          categories = data.categories || [];
-          events = data.events || [];
-
-          updateDisplay();
-          updateLoadStatus('✅ Données chargées', 'loaded');
+          // Utiliser directement les données intégrées
+          loadExampleData();
         } catch (error) {
           console.error('Erreur lors du chargement:', error);
           updateLoadStatus('❌ Erreur de chargement', 'error');
@@ -426,101 +417,143 @@
       }
 
       function loadExampleData() {
-        // Données d'exemple intégrées
-        categories = [
-          { id: '1', name: 'Coaching', color: '#dc2626' },
-          { id: '2', name: 'Entrainement', color: '#059669' },
-          { id: '3', name: 'Practice', color: '#7c3aed' },
-          { id: '4', name: 'Tournoi', color: '#f59e0b' },
-        ];
+        // Données intégrées directement depuis events.json
+        const data = {
+          version: '1.0',
+          lastUpdated: '2025-06-17T10:00:00Z',
+          teamName: 'SILENT4VIBE',
+          categories: [
+            {
+              id: '1',
+              name: 'Coaching',
+              color: '#dc2626',
+              description: "Sessions de coaching et d'analyse tactique",
+            },
+            {
+              id: '2',
+              name: 'Entrainement',
+              color: '#059669',
+              description: 'Entraînements en équipe et scrimmages',
+            },
+            {
+              id: '3',
+              name: 'Practice',
+              color: '#7c3aed',
+              description: 'Entraînement individuel et aim training',
+            },
+            {
+              id: '4',
+              name: 'Tournoi',
+              color: '#f59e0b',
+              description: 'Compétitions et tournois officiels',
+            },
+            {
+              id: '5',
+              name: 'Review',
+              color: '#06b6d4',
+              description: 'Analyse de replays et débriefing',
+            },
+          ],
+          events: [
+            {
+              id: 'train_weekly_1',
+              title: 'Entrainement - Information et communication',
+              description:
+                "Utilisation de la communication pour améliorer la coordination et la compréhension des actions. Pratique du 'Ou, combien, comment ?'",
+              categoryId: '2',
+              date: '2025-06-16',
+              startTime: '20:00',
+              endTime: '22:00',
+              isRecurring: true,
+              participants: [
+                'Jack',
+                'Polonais',
+                'Leitto',
+                'Papa Ours',
+                'Coach: Endjoy',
+              ],
+            },
+            {
+              id: 'train_weekly_2',
+              title: 'Entrainement - Information et communication',
+              description:
+                "Utilisation de la communication pour améliorer la coordination et la compréhension des actions. Pratique du 'Ou, combien, comment ?'",
+              categoryId: '2',
+              date: '2025-06-18',
+              startTime: '20:00',
+              endTime: '22:00',
+              isRecurring: true,
+              participants: [
+                'Jack',
+                'Polonais',
+                'Leitto',
+                'Papa Ours',
+                'Angelo',
+                'Raziel',
+                'Coach: Endjoy',
+              ],
+            },
+            {
+              id: 'coach_weekly_1',
+              title: 'Coaching Luttems',
+              description:
+                "Analyse des stratégies d'équipe, travail sur les compositions et les rotations. Focus sur l'amélioration de la communication.",
+              categoryId: '1',
+              date: '2025-06-19',
+              startTime: '20:00',
+              endTime: '22:00',
+              isRecurring: true,
+              participants: [
+                'Jack',
+                'Polonais',
+                'Leitto',
+                'Papa Ours',
+                'Endjoy',
+                'Raziel',
+                'Angelo',
+                'Coach: Luttems',
+              ],
+            },
+          ],
+        };
 
+        categories = data.categories || [];
+        events = data.events || [];
+
+        // Générer des événements récurrents pour les semaines futures
         const today = new Date();
         const currentMonday = new Date(today);
         currentMonday.setDate(today.getDate() - (today.getDay() || 7) + 1);
 
-        events = [];
+        const originalEvents = [...events];
 
-        // Générer des événements d'exemple pour 8 semaines
+        // Générer des événements pour 8 semaines à partir des événements récurrents
         for (let week = 0; week < 8; week++) {
-          const weekStart = new Date(currentMonday);
-          weekStart.setDate(currentMonday.getDate() + week * 7);
+          originalEvents.forEach((event) => {
+            if (event.isRecurring) {
+              const eventDate = new Date(event.date);
+              const dayOfWeek = eventDate.getDay();
 
-          // Coaching hebdomadaire le mardi
-          events.push({
-            id: `coaching_${week}`,
-            title: 'Coaching Tactique',
-            description: 'Analyse des stratégies et amélioration du gameplay',
-            categoryId: '1',
-            date: new Date(weekStart.getTime() + 1 * 24 * 60 * 60 * 1000)
-              .toISOString()
-              .split('T')[0],
-            startTime: '20:00',
-            endTime: '22:00',
-            isRecurring: true,
+              // Calculer la date pour cette semaine
+              const newEventDate = new Date(currentMonday);
+              newEventDate.setDate(
+                currentMonday.getDate() + dayOfWeek + week * 7
+              );
+
+              // Créer un nouvel événement pour cette semaine
+              const newEvent = {
+                ...event,
+                id: `${event.id}_week_${week}`,
+                date: newEventDate.toISOString().split('T')[0],
+              };
+
+              events.push(newEvent);
+            }
           });
-
-          // Entraînement le mercredi
-          events.push({
-            id: `training_${week}`,
-            title: 'Entraînement Équipe',
-            description: 'Scrimmage et travail en équipe',
-            categoryId: '2',
-            date: new Date(weekStart.getTime() + 2 * 24 * 60 * 60 * 1000)
-              .toISOString()
-              .split('T')[0],
-            startTime: '19:00',
-            endTime: '21:00',
-            isRecurring: true,
-          });
-
-          // Practice le vendredi
-          events.push({
-            id: `practice_${week}`,
-            title: 'Practice Solo',
-            description: 'Entraînement individuel et aim training',
-            categoryId: '3',
-            date: new Date(weekStart.getTime() + 4 * 24 * 60 * 60 * 1000)
-              .toISOString()
-              .split('T')[0],
-            startTime: '18:00',
-            endTime: '20:00',
-            isRecurring: true,
-          });
-
-          // Événements spéciaux certaines semaines
-          if (week === 2) {
-            events.push({
-              id: `tournament_${week}`,
-              title: 'Tournoi Communautaire',
-              description: 'Participation au tournoi hebdomadaire',
-              categoryId: '4',
-              date: new Date(weekStart.getTime() + 5 * 24 * 60 * 60 * 1000)
-                .toISOString()
-                .split('T')[0],
-              startTime: '14:00',
-              endTime: '18:00',
-              isRecurring: false,
-            });
-          }
-
-          if (week === 4) {
-            events.push({
-              id: `bootcamp_${week}`,
-              title: 'Bootcamp Intensif',
-              description: "Session d'entraînement intensive avant compétition",
-              categoryId: '2',
-              date: new Date(weekStart.getTime() + 6 * 24 * 60 * 60 * 1000)
-                .toISOString()
-                .split('T')[0],
-              startTime: '13:00',
-              endTime: '17:00',
-              isRecurring: false,
-            });
-          }
         }
 
         updateDisplay();
-        updateLoadStatus("📝 Données d'exemple chargées", 'loaded');
+        updateLoadStatus('✅ Données chargées depuis events.json', 'loaded');
       }
 
       function updateLoadStatus(message, type) {
@@ -708,7 +741,7 @@
 
         document.getElementById('modalTitle').textContent = event.title;
 
-        const detailsHTML = `
+        let detailsHTML = `
           <div class="event-detail">
             <strong>Description :</strong>
             <span>${event.description || 'Aucune description'}</span>
@@ -742,6 +775,16 @@
             }</span>
           </div>
         `;
+
+        // Ajouter les participants s'ils existent
+        if (event.participants && event.participants.length > 0) {
+          detailsHTML += `
+            <div class="event-detail">
+              <strong>Participants :</strong>
+              <span>${event.participants.join(', ')}</span>
+            </div>
+          `;
+        }
 
         document.getElementById('eventDetails').innerHTML = detailsHTML;
         document.getElementById('eventModal').style.display = 'block';
