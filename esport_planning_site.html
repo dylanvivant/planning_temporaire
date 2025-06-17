@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Planning SILENT4VIBE" />
+    <meta
+      name="keywords"
+      content="esports, planning, SILENT4VIBE, event management, calendar"
+    />
+    <meta name="author" content="SILENT4VIBE Team" />
+    <meta name="theme-color" content="#8b7cbf" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="stylesheet" href="styles.css" />
+    <title>Planning SILENT4VIBE</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #8b7cbf 0%, #e8a5c8 100%);
+        min-height: 100vh;
+        color: #333;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+        color: white;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        font-weight: 700;
+      }
+
+      .header p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+      }
+
+      .controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+      }
+
+      .week-nav {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .week-nav button {
+        background: #dc2626;
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        font-size: 14px;
+      }
+
+      .week-nav button:hover {
+        background: #b91c1c;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+      }
+
+      .week-nav button:disabled {
+        background: #9ca3af;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      .current-week {
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: #374151;
+        min-width: 200px;
+        text-align: center;
+      }
+
+      .controls-right {
+        display: flex;
+        gap: 10px;
+      }
+
+      .add-event-btn,
+      .manage-categories-btn {
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        color: white;
+      }
+
+      .add-event-btn {
+        background: #059669;
+      }
+
+      .add-event-btn:hover {
+        background: #047857;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+      }
+
+      .manage-categories-btn {
+        background: #7c3aed;
+      }
+
+      .manage-categories-btn:hover {
+        background: #6d28d9;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+      }
+
+      .calendar-grid {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+      }
+
+      .days-header {
+        display: grid;
+        grid-template-columns: 80px repeat(7, 1fr);
+        background: #dc2626;
+        color: white;
+      }
+
+      .day-header {
+        padding: 15px 10px;
+        text-align: center;
+        font-weight: 600;
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .day-header:first-child {
+        background: #b91c1c;
+      }
+
+      .time-grid {
+        display: grid;
+        grid-template-columns: 80px repeat(7, 1fr);
+        max-height: 600px;
+        overflow-y: auto;
+      }
+
+      .time-slot {
+        padding: 8px 5px;
+        border-right: 1px solid #e5e7eb;
+        border-bottom: 1px solid #e5e7eb;
+        text-align: center;
+        font-size: 12px;
+        font-weight: 500;
+        background: #f9fafb;
+        color: #6b7280;
+      }
+
+      .day-column {
+        border-right: 1px solid #e5e7eb;
+        border-bottom: 1px solid #e5e7eb;
+        padding: 8px;
+        min-height: 50px;
+        position: relative;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+      }
+
+      .day-column:hover {
+        background: rgba(220, 38, 38, 0.05);
+      }
+
+      .event {
+        color: white;
+        padding: 8px;
+        border-radius: 6px;
+        margin: 2px 0;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .event:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      }
+
+      .event-title {
+        font-weight: 600;
+        margin-bottom: 2px;
+      }
+
+      .event-time {
+        font-size: 10px;
+        opacity: 0.9;
+      }
+
+      .event-category {
+        font-size: 9px;
+        opacity: 0.8;
+        font-style: italic;
+      }
+
+      .delete-btn {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 12px;
+        display: none;
+      }
+
+      .event:hover .delete-btn {
+        display: block;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        backdrop-filter: blur(5px);
+      }
+
+      .modal-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+
+      .modal h3 {
+        margin-bottom: 20px;
+        color: #374151;
+        font-size: 1.4rem;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #374151;
+      }
+
+      .form-group input,
+      .form-group select,
+      .form-group textarea {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: border-color 0.3s ease;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus,
+      .form-group textarea:focus {
+        outline: none;
+        border-color: #dc2626;
+      }
+
+      .form-group textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+
+      .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .checkbox-group input[type='checkbox'] {
+        width: auto;
+      }
+
+      .modal-buttons {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        margin-top: 25px;
+      }
+
+      .modal-buttons button {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .save-btn {
+        background: #dc2626;
+        color: white;
+      }
+
+      .save-btn:hover {
+        background: #b91c1c;
+      }
+
+      .cancel-btn {
+        background: #6b7280;
+        color: white;
+      }
+
+      .cancel-btn:hover {
+        background: #4b5563;
+      }
+
+      .category-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        background: #f9fafb;
+      }
+
+      .category-color {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        margin-right: 10px;
+      }
+
+      .category-info {
+        display: flex;
+        align-items: center;
+        flex: 1;
+      }
+
+      .category-actions {
+        display: flex;
+        gap: 5px;
+      }
+
+      .btn-small {
+        padding: 5px 10px;
+        font-size: 12px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      .btn-edit {
+        background: #3b82f6;
+        color: white;
+      }
+
+      .btn-delete {
+        background: #ef4444;
+        color: white;
+      }
+
+      .color-picker-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .color-picker-group input[type='color'] {
+        width: 50px;
+        height: 40px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 10px;
+        }
+
+        .controls {
+          flex-direction: column;
+          gap: 15px;
+        }
+
+        .controls-right {
+          flex-direction: column;
+          width: 100%;
+        }
+
+        .days-header {
+          grid-template-columns: 60px repeat(7, 1fr);
+        }
+
+        .time-grid {
+          grid-template-columns: 60px repeat(7, 1fr);
+        }
+
+        .day-header {
+          padding: 10px 5px;
+          font-size: 12px;
+        }
+
+        .time-slot {
+          padding: 5px 2px;
+          font-size: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🎮 SILENT4VIBE</h1>
+        <p>Planning d'entraînement esport</p>
+      </div>
+
+      <div class="controls">
+        <div class="week-nav">
+          <button id="prevWeek">← Semaine précédente</button>
+          <div class="current-week" id="currentWeek"></div>
+          <button id="nextWeek">Semaine suivante →</button>
+        </div>
+        <div class="controls-right">
+          <button class="manage-categories-btn" onclick="openCategoriesModal()">
+            🏷️ Gérer les catégories
+          </button>
+          <button class="add-event-btn" onclick="openModal()">
+            + Ajouter un événement
+          </button>
+        </div>
+      </div>
+
+      <div class="calendar-grid">
+        <div class="days-header">
+          <div class="day-header">Heure</div>
+          <div class="day-header">Lundi</div>
+          <div class="day-header">Mardi</div>
+          <div class="day-header">Mercredi</div>
+          <div class="day-header">Jeudi</div>
+          <div class="day-header">Vendredi</div>
+          <div class="day-header">Samedi</div>
+          <div class="day-header">Dimanche</div>
+        </div>
+        <div class="time-grid" id="timeGrid"></div>
+      </div>
+    </div>
+
+    <!-- Modal pour ajouter/modifier un événement -->
+    <div class="modal" id="eventModal">
+      <div class="modal-content">
+        <h3 id="modalTitle">Ajouter un événement</h3>
+        <div class="form-group">
+          <label for="eventTitle">Titre de l'événement :</label>
+          <input
+            type="text"
+            id="eventTitle"
+            placeholder="Ex: Entraînement Valorant"
+          />
+        </div>
+        <div class="form-group">
+          <label for="eventDescription">Description :</label>
+          <textarea
+            id="eventDescription"
+            placeholder="Description de l'événement..."
+          ></textarea>
+        </div>
+        <div class="form-group">
+          <label for="eventCategory">Catégorie :</label>
+          <select id="eventCategory"></select>
+        </div>
+        <div class="form-group">
+          <label for="eventDate">Date :</label>
+          <input type="date" id="eventDate" />
+        </div>
+        <div class="form-group">
+          <label for="eventStartTime">Heure de début :</label>
+          <select id="eventStartTime"></select>
+        </div>
+        <div class="form-group">
+          <label for="eventEndTime">Heure de fin :</label>
+          <select id="eventEndTime"></select>
+        </div>
+        <div class="form-group">
+          <div class="checkbox-group">
+            <input type="checkbox" id="eventRecurring" />
+            <label for="eventRecurring">Répéter chaque semaine</label>
+          </div>
+        </div>
+        <div class="modal-buttons">
+          <button class="cancel-btn" onclick="closeModal()">Annuler</button>
+          <button class="save-btn" onclick="saveEvent()">Sauvegarder</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal pour gérer les catégories -->
+    <div class="modal" id="categoriesModal">
+      <div class="modal-content">
+        <h3>Gérer les catégories</h3>
+        <div id="categoriesList"></div>
+        <div class="form-group">
+          <label for="newCategoryName">Nouvelle catégorie :</label>
+          <input
+            type="text"
+            id="newCategoryName"
+            placeholder="Nom de la catégorie"
+          />
+        </div>
+        <div class="form-group">
+          <label for="newCategoryColor">Couleur :</label>
+          <div class="color-picker-group">
+            <input type="color" id="newCategoryColor" value="#dc2626" />
+            <span>Choisir une couleur</span>
+          </div>
+        </div>
+        <div class="modal-buttons">
+          <button class="save-btn" onclick="addCategory()">Ajouter</button>
+          <button class="cancel-btn" onclick="closeCategoriesModal()">
+            Fermer
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Variables globales
+      let currentWeekStart = new Date();
+      let events = [];
+      let categories = [];
+      let maxWeeks = 4;
+      let editingEventId = null;
+      let editingCategoryId = null;
+
+      // Initialisation
+      document.addEventListener('DOMContentLoaded', function () {
+        loadData();
+        setCurrentWeek();
+        generateTimeSlots();
+        updateDisplay();
+        setupEventListeners();
+      });
+
+      function setupEventListeners() {
+        document
+          .getElementById('prevWeek')
+          .addEventListener('click', () => changeWeek(-1));
+        document
+          .getElementById('nextWeek')
+          .addEventListener('click', () => changeWeek(1));
+      }
+
+      function initializeDefaultCategories() {
+        if (categories.length === 0) {
+          categories = [
+            { id: '1', name: 'Coaching', color: '#dc2626' },
+            { id: '2', name: 'Entrainement', color: '#059669' },
+            { id: '3', name: 'Practice', color: '#7c3aed' },
+          ];
+          saveData();
+        }
+      }
+
+      function setCurrentWeek() {
+        const today = new Date();
+        const dayOfWeek = today.getDay();
+        const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+        currentWeekStart = new Date(today);
+        currentWeekStart.setDate(today.getDate() + mondayOffset);
+        currentWeekStart.setHours(0, 0, 0, 0);
+      }
+
+      function generateTimeSlots() {
+        const container = document.getElementById('timeGrid');
+        container.innerHTML = '';
+
+        for (let hour = 12; hour <= 23; hour++) {
+          // Créer la cellule d'heure
+          const timeSlot = document.createElement('div');
+          timeSlot.className = 'time-slot';
+          timeSlot.textContent = `${hour}:00`;
+          container.appendChild(timeSlot);
+
+          // Créer les cellules pour chaque jour
+          for (let day = 0; day < 7; day++) {
+            const dayColumn = document.createElement('div');
+            dayColumn.className = 'day-column';
+            dayColumn.dataset.day = day;
+            dayColumn.dataset.hour = hour;
+            dayColumn.addEventListener('click', () => openModal(day, hour));
+            container.appendChild(dayColumn);
+          }
+        }
+
+        // Ajouter la cellule pour minuit (00:00)
+        const midnightSlot = document.createElement('div');
+        midnightSlot.className = 'time-slot';
+        midnightSlot.textContent = '00:00';
+        container.appendChild(midnightSlot);
+
+        for (let day = 0; day < 7; day++) {
+          const dayColumn = document.createElement('div');
+          dayColumn.className = 'day-column';
+          dayColumn.dataset.day = day;
+          dayColumn.dataset.hour = 0;
+          dayColumn.addEventListener('click', () => openModal(day, 0));
+          container.appendChild(dayColumn);
+        }
+      }
+
+      function updateDisplay() {
+        updateWeekDisplay();
+        updateWeekNavigation();
+        displayEvents();
+      }
+
+      function updateWeekDisplay() {
+        const weekEnd = new Date(currentWeekStart);
+        weekEnd.setDate(currentWeekStart.getDate() + 6);
+
+        const options = { day: 'numeric', month: 'long', year: 'numeric' };
+        const startStr = currentWeekStart.toLocaleDateString('fr-FR', options);
+        const endStr = weekEnd.toLocaleDateString('fr-FR', options);
+
+        document.getElementById(
+          'currentWeek'
+        ).textContent = `${startStr} - ${endStr}`;
+      }
+
+      function updateWeekNavigation() {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const maxDate = new Date(today);
+        maxDate.setDate(today.getDate() + maxWeeks * 7 - 7); // Correction du bug
+
+        const currentWeekStartCopy = new Date(currentWeekStart);
+        currentWeekStartCopy.setHours(0, 0, 0, 0);
+
+        document.getElementById('prevWeek').disabled =
+          currentWeekStartCopy.getTime() <= today.getTime();
+        document.getElementById('nextWeek').disabled =
+          currentWeekStartCopy.getTime() >= maxDate.getTime();
+      }
+
+      function changeWeek(direction) {
+        const newWeekStart = new Date(currentWeekStart);
+        newWeekStart.setDate(currentWeekStart.getDate() + direction * 7);
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const maxDate = new Date(today);
+        maxDate.setDate(today.getDate() + maxWeeks * 7);
+
+        if (newWeekStart >= today && newWeekStart < maxDate) {
+          currentWeekStart = newWeekStart;
+          updateDisplay();
+        }
+      }
+
+      function displayEvents() {
+        // Nettoyer les événements existants
+        document.querySelectorAll('.event').forEach((event) => event.remove());
+
+        const weekEnd = new Date(currentWeekStart);
+        weekEnd.setDate(currentWeekStart.getDate() + 7);
+
+        events.forEach((event) => {
+          const eventDate = new Date(event.date);
+          if (eventDate >= currentWeekStart && eventDate < weekEnd) {
+            displayEvent(event);
+          }
+        });
+      }
+
+      function displayEvent(event) {
+        const eventDate = new Date(event.date);
+        const dayOfWeek = (eventDate.getDay() + 6) % 7; // Convertir dimanche=0 en lundi=0
+
+        const startHour = parseInt(event.startTime.split(':')[0]);
+        const endHour = parseInt(event.endTime.split(':')[0]);
+
+        const category = categories.find((c) => c.id === event.categoryId);
+        const categoryColor = category ? category.color : '#dc2626';
+        const categoryName = category ? category.name : 'Sans catégorie';
+
+        // Afficher l'événement sur tous les créneaux horaires qu'il occupe
+        const hoursToDisplay =
+          endHour > startHour
+            ? Array.from(
+                { length: endHour - startHour },
+                (_, i) => startHour + i
+              )
+            : [startHour]; // Si endHour <= startHour, afficher seulement l'heure de début
+
+        hoursToDisplay.forEach((hour, index) => {
+          const dayColumn = document.querySelector(
+            `[data-day="${dayOfWeek}"][data-hour="${hour}"]`
+          );
+          if (dayColumn) {
+            const eventElement = document.createElement('div');
+            eventElement.className = 'event';
+            eventElement.style.background = `linear-gradient(135deg, ${categoryColor}, ${categoryColor}dd)`;
+
+            if (index === 0) {
+              // Premier créneau - affichage complet
+              eventElement.innerHTML = `
+                <div class="event-title">${event.title}</div>
+                <div class="event-time">${event.startTime} - ${event.endTime}</div>
+                <div class="event-category">${categoryName}</div>
+                <button class="delete-btn" onclick="deleteEvent('${event.id}')" title="Supprimer">×</button>
+              `;
+            } else {
+              // Créneaux suivants - affichage simplifié
+              eventElement.innerHTML = `
+                <div class="event-title" style="font-size: 10px;">${event.title} (suite)</div>
+                <button class="delete-btn" onclick="deleteEvent('${event.id}')" title="Supprimer">×</button>
+              `;
+            }
+
+            eventElement.addEventListener('click', (e) => {
+              e.stopPropagation();
+              editEvent(event.id);
+            });
+            dayColumn.appendChild(eventElement);
+          }
+        });
+      }
+
+      function openModal(day = null, hour = null) {
+        const modal = document.getElementById('eventModal');
+
+        // Remplir les catégories et les heures
+        fillCategorySelect();
+        fillTimeSelects();
+
+        if (day !== null && hour !== null) {
+          const date = new Date(currentWeekStart);
+          date.setDate(currentWeekStart.getDate() + day);
+          document.getElementById('eventDate').value = date
+            .toISOString()
+            .split('T')[0];
+          document.getElementById('eventStartTime').value = `${hour
+            .toString()
+            .padStart(2, '0')}:00`;
+
+          // Définir l'heure de fin par défaut (1 heure plus tard)
+          const endHour = hour < 23 ? hour + 1 : 0;
+          document.getElementById('eventEndTime').value = `${endHour
+            .toString()
+            .padStart(2, '0')}:00`;
+        }
+
+        modal.style.display = 'block';
+      }
+
+      function closeModal() {
+        const modal = document.getElementById('eventModal');
+        modal.style.display = 'none';
+        resetForm();
+      }
+
+      function resetForm() {
+        document.getElementById('eventTitle').value = '';
+        document.getElementById('eventDescription').value = '';
+        document.getElementById('eventDate').value = '';
+        document.getElementById('eventStartTime').value = '';
+        document.getElementById('eventEndTime').value = '';
+        document.getElementById('eventRecurring').checked = false;
+        editingEventId = null;
+        document.getElementById('modalTitle').textContent =
+          'Ajouter un événement';
+      }
+
+      function fillCategorySelect() {
+        const select = document.getElementById('eventCategory');
+        select.innerHTML = '';
+
+        categories.forEach((category) => {
+          const option = document.createElement('option');
+          option.value = category.id;
+          option.textContent = category.name;
+          select.appendChild(option);
+        });
+      }
+
+      function fillTimeSelects() {
+        const startSelect = document.getElementById('eventStartTime');
+        const endSelect = document.getElementById('eventEndTime');
+
+        startSelect.innerHTML = '';
+        endSelect.innerHTML = '';
+
+        for (let hour = 12; hour <= 23; hour++) {
+          const option1 = document.createElement('option');
+          option1.value = `${hour}:00`;
+          option1.textContent = `${hour}:00`;
+          startSelect.appendChild(option1);
+
+          const option2 = document.createElement('option');
+          option2.value = `${hour}:00`;
+          option2.textContent = `${hour}:00`;
+          endSelect.appendChild(option2);
+        }
+
+        // Ajouter 00:00
+        const midnight1 = document.createElement('option');
+        midnight1.value = '00:00';
+        midnight1.textContent = '00:00';
+        startSelect.appendChild(midnight1);
+
+        const midnight2 = document.createElement('option');
+        midnight2.value = '00:00';
+        midnight2.textContent = '00:00';
+        endSelect.appendChild(midnight2);
+      }
+
+      function saveEvent() {
+        const title = document.getElementById('eventTitle').value.trim();
+        const description = document
+          .getElementById('eventDescription')
+          .value.trim();
+        const categoryId = document.getElementById('eventCategory').value;
+        const date = document.getElementById('eventDate').value;
+        const startTime = document.getElementById('eventStartTime').value;
+        const endTime = document.getElementById('eventEndTime').value;
+        const isRecurring = document.getElementById('eventRecurring').checked;
+
+        if (!title || !date || !startTime || !endTime || !categoryId) {
+          alert('Veuillez remplir tous les champs obligatoires.');
+          return;
+        }
+
+        if (editingEventId) {
+          // Modification d'un événement existant
+          const index = events.findIndex((e) => e.id === editingEventId);
+          events[index] = {
+            id: editingEventId,
+            title,
+            description,
+            categoryId,
+            date,
+            startTime,
+            endTime,
+            isRecurring,
+          };
+        } else {
+          // Création d'un ou plusieurs nouveaux événements
+          const baseEvent = {
+            title,
+            description,
+            categoryId,
+            date,
+            startTime,
+            endTime,
+            isRecurring,
+          };
+
+          if (isRecurring) {
+            // Créer l'événement pour 4 semaines
+            for (let week = 0; week < 4; week++) {
+              const eventDate = new Date(date);
+              eventDate.setDate(eventDate.getDate() + week * 7);
+
+              events.push({
+                ...baseEvent,
+                id: Date.now().toString() + '_' + week,
+                date: eventDate.toISOString().split('T')[0],
+              });
+            }
+          } else {
+            events.push({
+              ...baseEvent,
+              id: Date.now().toString(),
+            });
+          }
+        }
+
+        saveData();
+        updateDisplay();
+        closeModal();
+      }
+
+      function editEvent(eventId) {
+        const event = events.find((e) => e.id === eventId);
+        if (event) {
+          editingEventId = eventId;
+          document.getElementById('modalTitle').textContent =
+            "Modifier l'événement";
+          document.getElementById('eventTitle').value = event.title;
+          document.getElementById('eventDescription').value = event.description;
+          document.getElementById('eventDate').value = event.date;
+          fillCategorySelect();
+          fillTimeSelects();
+          document.getElementById('eventCategory').value =
+            event.categoryId || categories[0]?.id;
+          document.getElementById('eventStartTime').value = event.startTime;
+          document.getElementById('eventEndTime').value = event.endTime;
+          document.getElementById('eventRecurring').checked =
+            event.isRecurring || false;
+          document.getElementById('eventModal').style.display = 'block';
+        }
+      }
+
+      function deleteEvent(eventId) {
+        if (confirm('Êtes-vous sûr de vouloir supprimer cet événement ?')) {
+          events = events.filter((e) => e.id !== eventId);
+          saveData();
+          updateDisplay();
+        }
+      }
+
+      // Gestion des catégories
+      function openCategoriesModal() {
+        const modal = document.getElementById('categoriesModal');
+        updateCategoriesList();
+        modal.style.display = 'block';
+      }
+
+      function closeCategoriesModal() {
+        const modal = document.getElementById('categoriesModal');
+        modal.style.display = 'none';
+        resetCategoryForm();
+      }
+
+      function resetCategoryForm() {
+        document.getElementById('newCategoryName').value = '';
+        document.getElementById('newCategoryColor').value = '#dc2626';
+        editingCategoryId = null;
+      }
+
+      function updateCategoriesList() {
+        const container = document.getElementById('categoriesList');
+        container.innerHTML = '';
+
+        categories.forEach((category) => {
+          const categoryItem = document.createElement('div');
+          categoryItem.className = 'category-item';
+          categoryItem.innerHTML = `
+            <div class="category-info">
+              <div class="category-color" style="background-color: ${category.color}"></div>
+              <span>${category.name}</span>
+            </div>
+            <div class="category-actions">
+              <button class="btn-small btn-edit" onclick="editCategory('${category.id}')">Modifier</button>
+              <button class="btn-small btn-delete" onclick="deleteCategory('${category.id}')">Supprimer</button>
+            </div>
+          `;
+          container.appendChild(categoryItem);
+        });
+      }
+
+      function addCategory() {
+        const name = document.getElementById('newCategoryName').value.trim();
+        const color = document.getElementById('newCategoryColor').value;
+
+        if (!name) {
+          alert('Veuillez saisir un nom pour la catégorie.');
+          return;
+        }
+
+        if (editingCategoryId) {
+          // Modification
+          const index = categories.findIndex((c) => c.id === editingCategoryId);
+          categories[index] = { id: editingCategoryId, name, color };
+        } else {
+          // Ajout
+          categories.push({
+            id: Date.now().toString(),
+            name,
+            color,
+          });
+        }
+
+        saveData();
+        updateCategoriesList();
+        resetCategoryForm();
+        updateDisplay();
+      }
+
+      function editCategory(categoryId) {
+        const category = categories.find((c) => c.id === categoryId);
+        if (category) {
+          editingCategoryId = categoryId;
+          document.getElementById('newCategoryName').value = category.name;
+          document.getElementById('newCategoryColor').value = category.color;
+        }
+      }
+
+      function deleteCategory(categoryId) {
+        if (categories.length <= 1) {
+          alert('Vous devez conserver au moins une catégorie.');
+          return;
+        }
+
+        if (
+          confirm(
+            'Êtes-vous sûr de vouloir supprimer cette catégorie ? Les événements associés seront déplacés vers la première catégorie.'
+          )
+        ) {
+          // Déplacer les événements vers la première catégorie disponible
+          const remainingCategories = categories.filter(
+            (c) => c.id !== categoryId
+          );
+          const fallbackCategoryId = remainingCategories[0].id;
+
+          events.forEach((event) => {
+            if (event.categoryId === categoryId) {
+              event.categoryId = fallbackCategoryId;
+            }
+          });
+
+          categories = remainingCategories;
+          saveData();
+          updateCategoriesList();
+          updateDisplay();
+        }
+      }
+
+      // Sauvegarde et chargement des données
+      function loadData() {
+        const savedEvents = localStorage.getItem('silent4vibe_events');
+        const savedCategories = localStorage.getItem('silent4vibe_categories');
+
+        if (savedEvents) {
+          events = JSON.parse(savedEvents);
+        }
+
+        if (savedCategories) {
+          categories = JSON.parse(savedCategories);
+        }
+
+        initializeDefaultCategories();
+      }
+
+      function saveData() {
+        localStorage.setItem('silent4vibe_events', JSON.stringify(events));
+        localStorage.setItem(
+          'silent4vibe_categories',
+          JSON.stringify(categories)
+        );
+      }
+
+      // Fermer les modals en cliquant à l'extérieur
+      window.addEventListener('click', function (event) {
+        const eventModal = document.getElementById('eventModal');
+        const categoriesModal = document.getElementById('categoriesModal');
+
+        if (event.target === eventModal) {
+          closeModal();
+        }
+        if (event.target === categoriesModal) {
+          closeCategoriesModal();
+        }
+      });
+    </script>
+  </body>
+</html>
