@@ -1,0 +1,95 @@
+{
+  "version": "1.0",
+  "lastUpdated": "2025-06-17T10:00:00Z",
+  "teamName": "SILENT4VIBE",
+  "categories": [
+    {
+      "id": "1",
+      "name": "Coaching",
+      "color": "#dc2626",
+      "description": "Sessions de coaching et d'analyse tactique"
+    },
+    {
+      "id": "2",
+      "name": "Entrainement",
+      "color": "#059669",
+      "description": "Entraînements en équipe et scrimmages"
+    },
+    {
+      "id": "3",
+      "name": "Practice",
+      "color": "#7c3aed",
+      "description": "Entraînement individuel et aim training"
+    },
+    {
+      "id": "4",
+      "name": "Tournoi",
+      "color": "#f59e0b",
+      "description": "Compétitions et tournois officiels"
+    },
+    {
+      "id": "5",
+      "name": "Review",
+      "color": "#06b6d4",
+      "description": "Analyse de replays et débriefing"
+    }
+  ],
+  "events": [
+    {
+      "id": "train_weekly_1",
+      "title": "Entrainement - Information et communication",
+      "description": "Utilisation de la communication pour améliorer la coordination et la compréhension des actions. Pratique du 'Ou, combien, comment ?'",
+      "categoryId": "2",
+      "date": "2025-06-16",
+      "startTime": "20:00",
+      "endTime": "22:00",
+      "isRecurring": true,
+      "participants": [
+        "Jack",
+        "Polonais",
+        "Leitto",
+        "Papa Ours",
+        "Coach: Endjoy"
+      ]
+    },
+    {
+      "id": "train_weekly_2",
+      "title": "Entrainement - Information et communication",
+      "description": "Utilisation de la communication pour améliorer la coordination et la compréhension des actions. Pratique du 'Ou, combien, comment ?'",
+      "categoryId": "2",
+      "date": "2025-06-18",
+      "startTime": "20:00",
+      "endTime": "22:00",
+      "isRecurring": true,
+      "participants": [
+        "Jack",
+        "Polonais",
+        "Leitto",
+        "Papa Ours",
+        "Angelo",
+        "Raziel",
+        "Coach: Endjoy"
+      ]
+    },
+    {
+      "id": "coach_weekly_1",
+      "title": "Coaching Luttems",
+      "description": "Analyse des stratégies d'équipe, travail sur les compositions et les rotations. Focus sur l'amélioration de la communication.",
+      "categoryId": "2",
+      "date": "2025-06-19",
+      "startTime": "20:00",
+      "endTime": "22:00",
+      "isRecurring": true,
+      "participants": [
+        "Jack",
+        "Polonais",
+        "Leitto",
+        "Papa Ours",
+        "Endjoy",
+        "Raziel",
+        "Angelo",
+        "Coach: Luttems"
+      ]
+    }
+  ]
+}
